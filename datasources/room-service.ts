@@ -15,128 +15,57 @@ export class RoomService extends DataSource {
         return Promise.resolve(findRoom(description));
     }
 
-    // getAuthorBooks(authorId) {
-    //     const filteredBooks = bookAuthors
-    //         .filter(bookAuthor => bookAuthor.authorId === authorId)
-    //         .map(bookAuthor => findBook(bookAuthor.bookId));
-    //     return Promise.resolve(filteredBooks);
-    // }
+    getBookings() {
+        return Promise.resolve(bookings)
+    }
 
-    // createAuthor(authorInput) {
-    //     const author = Object.assign({}, authorInput, { id: newId() });
-    //     authors.push(author);
-    //     return Promise.resolve(author);
-    // }
+    getBooking(id) {
+        return Promise.resolve(findBooking(id))
+    }
 
-    // updateAuthor(authorId, authorInput) {
-    //     let author = findAuthor(authorId);
-    //     author = author ? Object.assign(author, authorInput) : null;
-    //     return Promise.resolve(author);
-    // }
+    createBooking(bookingInput, roomId) {
+        const match = bookings.find(booking => booking.roomId === roomId && booking.date === bookingInput.date)
+        if (match) throw Error(`This room is already booked on ${bookingInput.date}, please try another date`)  
+        const booking = Object.assign({}, bookingInput, { id: newId(), roomId });
+        bookings.push(booking);
+        return Promise.resolve(booking);
+    }
 
-    // getPublishers() {
-    //     return Promise.resolve(publishers);
-    // }
+    createRoom(roomInput) {
+        const room = Object.assign({}, roomInput, { id: newId() });
+        rooms.push(room)
+        return Promise.resolve(room); 
+    }
 
-    // getPublisher(id) {
-    //     return Promise.resolve(findPublisher(id));
-    // }
+    getRoomBookings(roomId) {
+        return Promise.resolve(
+            bookings.filter(booking => booking.roomId === roomId)
+        )
+    }
 
-    // getPublisherBooks(publisherId) {
-    //     return Promise.resolve(
-    //         books.filter(book => book.publisherId === publisherId)
-    //     );
-    // }
-
-    // createPublisher(publisherInput) {
-    //     const publisher = Object.assign({}, publisherInput, { id: newId() });
-    //     publishers.push(publisher);
-    //     return Promise.resolve(publisher);
-    // }
-
-    // updatePublisher(publisherId, publisherInput) {
-    //     let publisher = findPublisher(publisherId);
-    //     publisher = publisher ? Object.assign(publisher, publisherInput) : null;
-    //     return Promise.resolve(publisher);
-    // }
-
-    // getBooks() {
-    //     return Promise.resolve(books);
-    // }
-
-    // getBook(id) {
-    //     return Promise.resolve(findBook(id));
-    // }
-
-    // getBookPublisher(bookId) {
-    //     const book = findBook(bookId);
-    //     const publisher = book ? findPublisher(book.publisherId) : null;
-    //     return Promise.resolve(publisher);
-    // }
-
-    // getBookAuthors(bookId) {
-    //     const filteredAuthors = bookAuthors
-    //         .filter(bookAuthor => bookAuthor.bookId === bookId)
-    //         .map(bookAuthor => findAuthor(bookAuthor.authorId));
-    //     return Promise.resolve(filteredAuthors);
-    // }
-
-    // createBook(bookInput, publisherId) {
-    //     const book = Object.assign({}, bookInput, { id: newId(), publisherId });
-    //     books.push(book);
-    //     return Promise.resolve(book);
-    // }
-
-    // updateBook(bookId, bookInput, publisherId) {
-    //     let book = findBook(bookId);
-    //     book = book ? Object.assign(book, bookInput) : null;
-    //     if (book) {
-    //         book = Object.assign(book, bookInput, { publisherId: publisherId });
-    //     }
-    //     return Promise.resolve(book);
-    // }
-
-    // setBookAuthors(bookId, authorIds) {
-    //     const book = findBook(bookId);
-    //     if (book) {
-    //         // Remove current book authors
-    //         bookAuthors = bookAuthors.filter(
-    //             bookAuthor => bookAuthor.bookId !== bookId
-    //         );
-
-    //         // Add new book authors
-    //         authorIds.forEach(authorId => {
-    //             bookAuthors.push({
-    //                 id: `${bookId}-${authorId}`,
-    //                 bookId: bookId,
-    //                 authorId: authorId
-    //             });
-    //         });
-    //     }
-    //     return Promise.resolve(book);
-    // }
+    getBookingRoom(bookingId) {
+        const booking = findBooking(bookingId);
+        const room = booking ? findRoom(booking.roomId) : null;
+        return Promise.resolve(room)
+    }
 }
 
-// ----- Helper Functions -----
 function newId() {
     return Math.random()
         .toString(36)
         .substring(7);
 }
 
-function findRoom(description) {
-    return rooms.find(room => room.description === description);
+function findRoom(id) {
+    return rooms.find(room => room.id === id);
 }
 
-// function findPublisher(id) {
-//     return publishers.find(publisher => publisher.id === id);
-// }
+function findBooking(id) {
+    return bookings.find(booking => booking.id === id)
+}
 
-// function findBook(id) {
-//     return books.find(book => book.id === id);
-// }
 
-// ----- Initial Data -----
+let bookings = []
 let rooms = [
     {
       "name":"Salle Google",
@@ -150,6 +79,7 @@ let rooms = [
             "name":"Retro Projecteur"
           }
       ],
+      "id": "1",
       "createdAt":"2016-12-07T12:39:29.812Z",
       "updatedAt":"2016-12-08T17:31:39.489Z"
     },
@@ -162,6 +92,7 @@ let rooms = [
             "name":"Retro Projecteur"
           }
       ],
+      "id": "2",
       "createdAt":"2016-12-07T12:39:55.384Z",
       "updatedAt":"2016-12-07T13:33:37.184Z"
     },
@@ -170,6 +101,7 @@ let rooms = [
       "description":"Salle Facebook",
       "capacity":11,
       "equipements":[],
+      "id": "3",
       "createdAt":"2016-12-07T14:15:55.733Z",
       "updatedAt":"2016-12-09T16:45:19.025Z"
     },
@@ -185,6 +117,7 @@ let rooms = [
             "name":"Retro Projecteur"
           }
       ],
+      "id": "4",
       "createdAt":"2016-12-09T16:45:34.419Z",
       "updatedAt":"2016-12-09T16:45:34.419Z"
     },
@@ -200,6 +133,7 @@ let rooms = [
             "name":"Retro Projecteur"
           }
       ],
+      "id": "5",
       "createdAt":"2016-12-09T16:45:49.096Z",
       "updatedAt":"2016-12-09T16:45:49.096Z"
     },
@@ -212,6 +146,7 @@ let rooms = [
             "name":"TV"
           }
       ],
+      "id": "6",
       "createdAt":"2016-12-07T12:39:55.384Z",
       "updatedAt":"2016-12-07T13:33:37.184Z"
     }
